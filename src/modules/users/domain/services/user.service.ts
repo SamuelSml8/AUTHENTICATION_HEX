@@ -3,10 +3,11 @@ import { UserRepository } from '../repositories/user-repository.interface';
 import { CreateUserDto, updateUserDto } from '../../application/dtos';
 import { JSONResponse } from 'src/common/json-response.interface';
 import { User } from '../entities/users.entity';
+import { MongooseUserRepository } from '../../infrastructure/mongoose-user-repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: MongooseUserRepository) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<JSONResponse<User>> {
     return await this.userRepository.createUser(createUserDto);
