@@ -35,9 +35,8 @@ export class UserController {
 
   @Put('update/:id')
   async updateUser(
-    @Param('id')
-    id: string,
-    updateUserDto: updateUserDto,
+    @Param('id') id: string,
+    @Body() updateUserDto: updateUserDto,
   ): Promise<JSONResponse<User>> {
     return this.userService.updateUser(id, updateUserDto);
   }
