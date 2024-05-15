@@ -1,9 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('/api/v1');
 
   const config = new DocumentBuilder()
@@ -21,7 +23,7 @@ async function bootstrap() {
 
   await app.listen(port);
   console.log(
-    `💜 Server on port: ${port} \n▪️ Server:\n💜 http://localhost:${port}/api/v1 \n\n▪️ Documentation:\n💜 http://localhost:${port}/api-doc`,
+    `💜 Server on port: ${port} \n\n▪️ Server:\n💜 http://localhost:${port}/api/v1 \n\n▪️ Documentation:\n💜 http://localhost:${port}/api-doc`,
   );
 }
 bootstrap();

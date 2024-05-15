@@ -27,10 +27,6 @@ export class CreateUserDto {
   @MaxLength(50, {
     message: 'The password must have maximum of 50 characters ',
   })
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*d)[a-zA-Zd]{8,}$/, {
-    message:
-      'The password is not secure. Make sure it includes: At least one lowercase letter. At least one uppercase letter. At least one digit. Must be at least 8 characters long',
-  })
   readonly password: string;
 
   @ApiProperty()
