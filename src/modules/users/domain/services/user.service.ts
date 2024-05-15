@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../repositories/user-repository.interface';
 import { CreateUserDto, updateUserDto } from '../../application/dtos';
 import { JSONResponse } from 'src/common/json-response.interface';
 import { User } from '../entities/users.entity';
@@ -28,7 +27,7 @@ export class UserService {
     return await this.userRepository.updateUser(id, updateUserDto);
   }
 
-  async deleteUser(id: string): Promise<JSONResponse<void>> {
+  async deleteUser(id: string): Promise<JSONResponse<User>> {
     return await this.userRepository.deleteUser(id);
   }
 }

@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from '../domain/repositories/user-repository.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../domain/entities/users.entity';
 import { Model } from 'mongoose';
 import { CreateUserDto, updateUserDto } from '../application/dtos';
 import { JSONResponse } from 'src/common/json-response.interface';
+import { isValidObjectId } from 'src/common/object-id-validation';
+import { isRegisteredEmail } from 'src/common/check-email-exist';
+import { jsonResponse } from 'src/common/response.utils';
 
 @Injectable()
 export class MongooseUserRepository implements UserRepository {
@@ -12,33 +15,45 @@ export class MongooseUserRepository implements UserRepository {
 
   async createUser(createUserDto: CreateUserDto): Promise<JSONResponse<User>> {
     try {
-      const createdUser = new this.userModel(createUserDto);
-      const savedUser = await createdUser.save();
-      return {
-        ok: true,
-        message: 'User created successfully',
-        data: savedUser,
-      };
+      if (await isRegisteredEmail(this.userModel, createUserDto.email)) {
+        throw new HttpException(
+          jsonResponse(
+            false,
+            `Email ${createUserDto.email} already exists`,
+            null,
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const createdUser = await this.userModel.create(createUserDto);
+      return jsonResponse(true, 'User created successfully', createdUser);
     } catch (error) {
-      return {
-        ok: true,
-        message: 'Failed to create user',
-        data: null,
-      };
+      throw error;
     }
   }
 
   async findUserById(id: string): Promise<JSONResponse<User>> {
     try {
-      const userFound = await this.userModel.findById(id);
-
-      if (!userFound) {
-        return { ok: false, message: 'User not found', data: null };
+      if (!isValidObjectId(id)) {
+        throw new HttpException(
+          jsonResponse(false, `Invalid user ID: ${id}`, null),
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
-      return { ok: true, message: 'User found by id', data: userFound };
+      const user = await this.userModel.findById(id).exec();
+
+      if (!user) {
+        throw new HttpException(
+          jsonResponse(false, `User with id ${id} not found`, null),
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return jsonResponse(true, 'User found successfully', user);
     } catch (error) {
-      return { ok: false, message: 'Failed to find user', data: null };
+      throw error;
     }
   }
 
@@ -46,9 +61,12 @@ export class MongooseUserRepository implements UserRepository {
     try {
       const users = await this.userModel.find();
 
-      return { ok: true, message: 'Users list', data: users };
+      return jsonResponse(true, 'Users list', users);
     } catch (error) {
-      return { ok: false, message: 'Failed to find users list', data: null };
+      throw new HttpException(
+        jsonResponse(false, 'Failed to find all users', null),
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -57,37 +75,66 @@ export class MongooseUserRepository implements UserRepository {
     updateUserDto: updateUserDto,
   ): Promise<JSONResponse<User>> {
     try {
-      const userFound = await this.userModel.findByIdAndUpdate(
-        id,
-        updateUserDto,
-        { new: true },
+      if (!isValidObjectId(id)) {
+        throw new HttpException(
+          jsonResponse(false, `Invalid user ID: ${id}`, null),
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const userToUpdate = await this.userModel.findById(id).exec();
+
+      const emailExists = await isRegisteredEmail(
+        this.userModel,
+        updateUserDto.email,
       );
 
-      if (!userFound) {
-        return { ok: false, message: 'User not found', data: null };
+      if (emailExists && updateUserDto.email != userToUpdate.email) {
+        throw new HttpException(
+          jsonResponse(
+            false,
+            `Email ${updateUserDto.email} already exists`,
+            null,
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
-      return {
-        ok: true,
-        message: 'User updated successfully',
-        data: userFound,
-      };
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(id, updateUserDto, { new: true })
+        .exec();
+      if (!updatedUser) {
+        throw new HttpException(
+          jsonResponse(false, `User with id ${id} not found`, null),
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return jsonResponse(true, 'User updated successfully', updatedUser);
     } catch (error) {
-      return { ok: false, message: 'Failed to update user', data: null };
+      throw error;
     }
   }
 
-  async deleteUser(id: string): Promise<JSONResponse<void>> {
-    const userFound = await this.userModel.findByIdAndDelete(id);
+  async deleteUser(id: string): Promise<JSONResponse<User>> {
+    try {
+      if (!isValidObjectId(id)) {
+        throw new HttpException(
+          jsonResponse(false, `Invalid user ID: ${id}`, null),
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
-    if (!userFound) {
-      return { ok: false, message: 'User not found', data: null };
+      const userFound = await this.userModel.findByIdAndDelete(id);
+
+      if (!userFound) {
+        throw new HttpException(
+          jsonResponse(false, `User with id ${id} not found`, null),
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return jsonResponse(true, 'User deleted successfully', userFound);
+    } catch (error) {
+      throw error;
     }
-
-    return {
-      ok: true,
-      message: 'User deleted successfully',
-      data: null,
-    };
   }
 }

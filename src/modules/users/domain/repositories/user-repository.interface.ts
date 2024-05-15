@@ -10,5 +10,5 @@ export interface UserRepository {
     id: string,
     updateUserDto: updateUserDto,
   ): Promise<JSONResponse<User>>;
-  deleteUser(id: string): Promise<JSONResponse<void>>;
+  deleteUser(id: string): Promise<JSONResponse<User>>;
 }
