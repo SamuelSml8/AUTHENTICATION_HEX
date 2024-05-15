@@ -35,15 +35,14 @@ export class UserController {
 
   @Put('update/:id')
   async updateUser(
-    @Param('id')
-    id: string,
-    updateUserDto: updateUserDto,
+    @Param('id') id: string,
+    @Body() updateUserDto: updateUserDto,
   ): Promise<JSONResponse<User>> {
     return this.userService.updateUser(id, updateUserDto);
   }
 
   @Delete('delete/:id')
-  async deleteUser(@Param('id') id: string): Promise<JSONResponse<void>> {
+  async deleteUser(@Param('id') id: string): Promise<JSONResponse<User>> {
     return this.userService.deleteUser(id);
   }
 }
