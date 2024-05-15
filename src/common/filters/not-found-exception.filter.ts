@@ -15,8 +15,12 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest();
 
-    jsonResponse(false, `Resource ${request.url} not found`, null);
+    const jsonResponseData = jsonResponse(
+      false,
+      `Resource ${request.url} not found`,
+      null,
+    );
 
-    response.status(HttpStatus.NOT_FOUND).json(jsonResponse(false, `Resource ${request.url} not found`, null));
+    response.status(HttpStatus.NOT_FOUND).json(jsonResponseData);
   }
 }
