@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { UserService } from '../../domain/services/user.service';
 import { CreateUserDto, updateUserDto } from '../dtos';
 import { JSONResponse } from 'src/common/json-response.interface';
@@ -21,12 +29,13 @@ export class UserController {
   }
 
   @Get(':id')
-  async findUserById(id: string): Promise<JSONResponse<User>> {
+  async findUserById(@Param('id') id: string): Promise<JSONResponse<User>> {
     return this.userService.findUserById(id);
   }
 
   @Put('update/:id')
   async updateUser(
+    @Param('id')
     id: string,
     updateUserDto: updateUserDto,
   ): Promise<JSONResponse<User>> {
@@ -34,7 +43,7 @@ export class UserController {
   }
 
   @Delete('delete/:id')
-  async deleteUser(id: string): Promise<JSONResponse<void>> {
+  async deleteUser(@Param('id') id: string): Promise<JSONResponse<void>> {
     return this.userService.deleteUser(id);
   }
 }
