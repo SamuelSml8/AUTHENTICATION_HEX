@@ -6,6 +6,7 @@ import { MongooseAuthRepository } from './infrastructure/mongoose-auth-repositor
 import { TokenService } from './domain/services/token.service';
 import { JwtAdapter } from './infrastructure/adapters/jwt-adapter';
 import { UtilsModule } from '../utils/utils.module';
+import { AuthController } from './application/controllers/auth.controller';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { UtilsModule } from '../utils/utils.module';
       signOptions: { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '15m' },
     }),
   ],
-  controllers: [],
+  controllers: [AuthController],
   providers: [AuthService, TokenService, JwtAdapter, MongooseAuthRepository],
   exports: [AuthService, TokenService],
 })

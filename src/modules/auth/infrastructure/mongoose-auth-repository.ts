@@ -34,6 +34,7 @@ export class MongooseAuthRepository implements AuthRepository {
 
     const hashedPassword = await this.hashService.hash(registerDto.password);
 
+
     const newUser = {
       email: registerDto.email,
       name: registerDto.name,
@@ -50,7 +51,7 @@ export class MongooseAuthRepository implements AuthRepository {
       );
     }
 
-    return jsonResponse(true, 'User sSuccessfully registered', newUser);
+    return jsonResponse(true, 'User successfully registered', newUser);
   }
 
   async login(loginDto: LoginDto): Promise<JSONResponse<Tokens>> {
