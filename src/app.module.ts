@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import dbConfig from './modules/persistence/db.config';
 import { MongodbModule } from './modules/persistence';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { MongooseUserRepository } from './modules/users/infrastructure/mongoose-user-repository';
 
 @Module({
   imports: [
@@ -12,7 +14,8 @@ import { UsersModule } from './modules/users/users.module';
       isGlobal: true,
     }),
     MongodbModule,
-    UsersModule
+    UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
