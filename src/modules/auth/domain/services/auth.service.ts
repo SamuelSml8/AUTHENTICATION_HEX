@@ -16,7 +16,6 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto): Promise<JSONResponse<User>> {
-    const user = await this.authRepository.register(registerDto);
-    return jsonResponse(true, 'User successfully registered', user);
+    return await this.authRepository.register(registerDto);
   }
 }
