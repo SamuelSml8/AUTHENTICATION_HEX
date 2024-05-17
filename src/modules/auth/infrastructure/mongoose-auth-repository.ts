@@ -5,7 +5,6 @@ import { LoginDto } from '../application/dtos';
 import { JSONResponse } from 'src/common/json-response.interface';
 import { Tokens } from './types';
 import { jsonResponse } from 'src/common/response.utils';
-import * as bcrypt from 'bcrypt';
 import { TokenService } from '../domain/services/token.service';
 import { HashService } from 'src/modules/utils/services/hash.service';
 
