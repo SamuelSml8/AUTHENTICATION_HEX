@@ -5,6 +5,7 @@ import { User } from '../entities/users.entity';
 export interface UserRepository {
   createUser(createUserDto: CreateUserDto): Promise<JSONResponse<User>>;
   findUserById(id: string): Promise<JSONResponse<User>>;
+  findUserByEmail(email: string): Promise<JSONResponse<User>>;
   findAllUsers(): Promise<JSONResponse<User[]>>;
   updateUser(
     id: string,

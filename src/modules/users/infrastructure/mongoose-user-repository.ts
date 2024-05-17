@@ -57,6 +57,23 @@ export class MongooseUserRepository implements UserRepository {
     }
   }
 
+  async findUserByEmail(email: string): Promise<JSONResponse<User>> {
+    try {
+      const user = await this.userModel.findOne({ email }).exec();
+
+      if (!user) {
+        throw new HttpException(
+          jsonResponse(false, `User with email ${email} not found`, null),
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return jsonResponse(true, 'User found successfully', user);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findAllUsers(): Promise<JSONResponse<User[]>> {
     try {
       const users = await this.userModel.find();
