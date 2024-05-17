@@ -8,13 +8,15 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class LoginAuthDto {
+export class LoginDto {
+
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty()
   @Transform(({ value }) => value.toLowerCase())
   email: string;
 
+  @Transform(({value}) => value.trim())
   @MinLength(8, { message: 'The password must be at least 8 characters' })
   @MaxLength(50, {
     message: 'The password must have a maximum of 100 characters',
