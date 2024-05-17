@@ -40,16 +40,18 @@ export class MongooseAuthRepository implements AuthRepository {
     }
 
     const user = userFound.data;
-    const { password, ...userWithoutPassword } = user;
     const payload = {
-      sub: userWithoutPassword.id,
-      ...userWithoutPassword,
+      sub: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActivate: user.isActivate,
     };
 
     return jsonResponse(
       true,
       'User successfully logged in',
-      this.tokenService.generateTokens(payload),
+      await this.tokenService.generateTokens(payload),
     );
   }
 }
