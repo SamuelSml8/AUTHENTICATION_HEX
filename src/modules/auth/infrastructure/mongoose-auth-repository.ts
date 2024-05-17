@@ -34,21 +34,23 @@ export class MongooseAuthRepository implements AuthRepository {
 
     const hashedPassword = await this.hashService.hash(registerDto.password);
 
-    const newUser = await this.userService.createUser({
+    const newUser = {
       email: registerDto.email,
       name: registerDto.name,
       password: hashedPassword,
       role: registerDto.role,
       isActivate: registerDto.isActivate,
-    });
+    };
 
-    if (!newUser.data) {
+    const createUser = await this.userService.createUser(newUser);
+
+    if (!createUser.data) {
       throw new BadRequestException(
         jsonResponse(false, 'failed to create user', null),
       );
     }
 
-    return jsonResponse(true, 'User successfully registered', newUser);
+    return jsonResponse(true, 'User sSuccessfully registered', newUser);
   }
 
   async login(loginDto: LoginDto): Promise<JSONResponse<Tokens>> {
