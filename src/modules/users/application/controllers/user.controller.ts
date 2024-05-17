@@ -33,6 +33,13 @@ export class UserController {
     return this.userService.findUserById(id);
   }
 
+  @Get('email/:email')
+  async findUserByEmail(
+    @Param('email') email: string,
+  ): Promise<JSONResponse<User>> {
+    return this.userService.findUserByEmail(email);
+  }
+
   @Put('update/:id')
   async updateUser(
     @Param('id') id: string,
