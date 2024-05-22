@@ -13,6 +13,7 @@ import { CreateUserDto, updateUserDto } from '../dtos';
 import { JSONResponse } from 'src/common/json-response.interface';
 import { User } from '../../domain/entities/users.entity';
 import { AdminGuard } from 'src/modules/auth/infrastructure/guards/admin.guard';
+import { AuthGuard } from 'src/modules/auth/infrastructure/guards/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -27,16 +28,19 @@ export class UserController {
   }
 
   @Get('all')
+  @UseGuards(AuthGuard)
   async findAllUsers(): Promise<JSONResponse<User[]>> {
     return this.userService.findAllUsers();
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard)
   async findUserById(@Param('id') id: string): Promise<JSONResponse<User>> {
     return this.userService.findUserById(id);
   }
 
   @Get('email/:email')
+  @UseGuards(AuthGuard)
   async findUserByEmail(
     @Param('email') email: string,
   ): Promise<JSONResponse<User>> {
@@ -44,6 +48,7 @@ export class UserController {
   }
 
   @Put('update/:id')
+  @UseGuards(AuthGuard)
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: updateUserDto,
