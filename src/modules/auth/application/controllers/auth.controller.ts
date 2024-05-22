@@ -1,9 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { LoginDto, RegisterDto } from '../dtos';
 import { JSONResponse } from 'src/common/json-response.interface';
 import { Tokens } from '../../infrastructure/types';
 import { AuthService } from '../../domain/services/auth.service';
 import { User } from 'src/modules/users/domain/entities/users.entity';
+import { AdminGuard } from '../../infrastructure/guards/admin.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -15,6 +16,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @UseGuards(AdminGuard)
   async register(
     @Body() registerDto: RegisterDto,
   ): Promise<JSONResponse<User>> {

@@ -1,30 +1,59 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from '../types/jwtPayload.type';
-import { UserRole } from 'src/modules/users/domain/enums/user-enum.roles';
+import { Reflector } from '@nestjs/core';
+import { JwtPayload } from '../types'; // Asegúrate de que JwtPayload esté definido correctamente
+import { jsonResponse } from 'src/common/response.utils';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private reflector: Reflector) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly reflector: Reflector,
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers.authorization;
+    const token = this.extractTokenFromHeader(request.headers.authorization);
 
-    if (!authHeader) {
-      return false; // No hay token JWT, denegar el acceso
+    if (!token) {
+      throw new UnauthorizedException(
+        jsonResponse(false, 'No JWT token provided', null),
+      );
     }
 
-    const token = authHeader.split(' ')[1];
-    const decodedToken = this.jwtService.decode(token) as JwtPayload;
+    try {
+      const decodedToken = this.jwtService.verify<JwtPayload>(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      request.user = decodedToken;
 
-    if (!decodedToken || !decodedToken.role) {
-      return false; // No se pudo decodificar el token o falta el rol, denegar el acceso
+      if (decodedToken.role !== 'admin') {
+        throw new ForbiddenException(
+          jsonResponse(false, 'Only admins can perform this action', null),
+        );
+      }
+
+      return true;
+    } catch (error) {
+      if (error instanceof ForbiddenException) {
+        throw error;
+      } else {
+        throw new UnauthorizedException(
+          jsonResponse(false, 'Invalid token', null),
+        );
+      }
     }
+  }
 
-    const userRole = decodedToken.role;
-
-    return userRole === UserRole.ADMIN; // Verificar si el usuario es administrador
+  private extractTokenFromHeader(authorizationHeader: string): string | null {
+    if (!authorizationHeader) return null;
+    const [, token] = authorizationHeader.split(' ');
+    return token || null;
   }
 }
