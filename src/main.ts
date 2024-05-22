@@ -13,10 +13,11 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Auth NestJS Documentation | Van Rossum')
     .setDescription(
-      'Handling Riwi Coin user authentication\n\n ▪️ Hernán Pereira \n\n ▪️ Samuel Vera',
+      'Welcome to the Riwi Coins Authentication API documentation. This API handles all authentication-related functionalities for the Riwi Coins platform, ensuring secure and efficient management of user authentication and authorization processes. The API provides endpoints for user login, registration, and token management, enabling seamless integration with the overall application.\n\n ▪️ Hernán Pereira \n\n ▪️ Samuel Vera',
     )
     .setVersion('1.0')
-    .addTag('Auth')
+    .addBearerAuth()
+    .addTag('Authentication Module')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-doc', app, document);
