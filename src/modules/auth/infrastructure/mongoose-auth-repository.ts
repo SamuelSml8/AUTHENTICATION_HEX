@@ -26,6 +26,13 @@ export class MongooseAuthRepository implements AuthRepository {
       );
     }
 
+    if (!userFound.data.isActivate) {
+      throw new HttpException(
+        jsonResponse(false, 'User account is not activated', null),
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const isPasswordValid = await this.hashService.compare(
       loginDto.password,
       userFound.data.password,
