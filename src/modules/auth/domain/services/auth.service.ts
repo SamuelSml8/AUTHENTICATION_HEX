@@ -16,4 +16,8 @@ export class AuthService {
   async register(registerDto: RegisterDto): Promise<JSONResponse<User>> {
     return await this.authRepository.register(registerDto);
   }
+
+  async logout(token: string): Promise<JSONResponse<null>> {
+    return await this.authRepository.logout(token);
+  }
 }

@@ -6,4 +6,5 @@ import { User } from 'src/modules/users/domain/entities/users.entity';
 export interface AuthRepository {
   login(loginDto: LoginDto): Promise<JSONResponse<Tokens>>;
   register(registerDto: RegisterDto): Promise<JSONResponse<User>>;
+  logout(token: string): Promise<JSONResponse<null>>;
 }
