@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthRepository } from '../domain/repositories/auth.repository';
 import { MongooseUserRepository } from 'src/modules/users/infrastructure/mongoose-user-repository';
@@ -33,7 +34,6 @@ export class MongooseAuthRepository implements AuthRepository {
     }
 
     const hashedPassword = await this.hashService.hash(registerDto.password);
-
 
     const newUser = {
       email: registerDto.email,
@@ -90,5 +90,14 @@ export class MongooseAuthRepository implements AuthRepository {
       'User successfully logged in',
       await this.tokenService.generateTokens(payload),
     );
+  }
+
+  async logout(token: string): Promise<JSONResponse<null>> {
+    if (this.tokenService.isTokenInvalidated(token)) {
+      throw new UnauthorizedException('Token has been invalidated');
+    }
+
+    this.tokenService.invalidateToken(token);
+    return jsonResponse(true, 'User successfully logged out', null);
   }
 }

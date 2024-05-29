@@ -8,10 +8,14 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../types'; // Ensure JwtPayload is correctly defined
 import { jsonResponse } from 'src/common/response.utils';
+import { TokenService } from '../../domain/services/token.service';
 
 @Injectable()
 export class BaseAuthGuard implements CanActivate {
-  constructor(protected readonly jwtService: JwtService) {}
+  constructor(
+    protected readonly jwtService: JwtService,
+    protected readonly tokenService: TokenService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -20,6 +24,12 @@ export class BaseAuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException(
         jsonResponse(false, 'No JWT token provided', null),
+      );
+    }
+
+    if (this.tokenService.isTokenInvalidated(token)) {
+      throw new UnauthorizedException(
+        jsonResponse(false, 'Token has been invalidated', null),
       );
     }
 

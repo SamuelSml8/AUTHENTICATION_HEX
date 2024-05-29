@@ -4,6 +4,8 @@ import { JwtPayload, Tokens } from '../../infrastructure/types';
 
 @Injectable()
 export class TokenService {
+  private invalidatedTokens: Set<string> = new Set();
+
   constructor(private readonly jwtAdapter: JwtAdapter) {}
 
   async generateTokens(jwtPayload: JwtPayload): Promise<Tokens> {
@@ -16,5 +18,13 @@ export class TokenService {
       accessTokenOptions,
     );
     return { access_token: accessToken };
+  }
+
+  invalidateToken(token: string): void {
+    this.invalidatedTokens.add(token);
+  }
+
+  isTokenInvalidated(token: string): boolean {
+    return this.invalidatedTokens.has(token);
   }
 }
