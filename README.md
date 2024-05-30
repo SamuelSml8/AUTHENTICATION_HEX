@@ -121,7 +121,7 @@ http://localhost:{PORT}/api-doc
 
 # Postman collection
 
-[Auth Postman]()
+[Auth Postman](RIWI-COINS.postman_collection.json)
 
 
 ## Support
