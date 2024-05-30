@@ -24,15 +24,68 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Gamification-Auth is a robust and secure authentication service designed to manage access to applications implementing gamification strategies. This service is developed using Node.js and NestJS, following a hexagonal architecture to ensure separation of concerns and facilitate scalability and maintainability.
 
-## Installation
+## Features
+- User Registration: Allows administrators to register new users.
 
+- User Login: Enables users to log in using valid credentials.
+
+- User Logout: Provides functionality for users to log out securely.
+
+- Role-Based Access Control: Ensures that only users with the appropriate roles can access specific resources.
+
+- Account Activation: Validates that user accounts are active before allowing login.
+
+- Token Management: Manages JWT tokens for authentication, including token generation and invalidation.
+
+
+# Installation
+
+## 1. Clone this repository
 ```bash
-$ npm install
+# HTTP
+$ git clone https://github.com/Riwi-io-Medellin/Gamification-Auth.git
+
+# SSH
+$ git clone git@github.com:Riwi-io-Medellin/Gamification-Auth.git
 ```
 
-## Running the app
+## 2. Install dependencies
+```bash
+$ npm install
+# or
+$ npm i
+```
+
+## 3. Set environment variables
+```bash
+# PORT
+PORT =
+
+# PERSISTENCE
+DB_CONNECTION = mongodb://
+DB_HOST_LOCAL = localhost:27017
+DB_HOST_PRODUCTION =
+DB_NAME =
+DB_USERNAME =
+DB_PASSWORD =
+ENVIRONMENT =
+
+#STRATEGY KEY
+JWT_SECRET = # YOUR JWT_SECRET
+ACCESS_TOKEN_EXPIRY = # TOKEN EXPIRATION TIME
+
+# EXAMPLE STRING CONNECTION
+mongodb+srv://<DB_USERNAME>:<DB_PASSWORD><DB_HOST_PRODUCTION>/<DB_NAME>
+```
+
+## Generate JWT_SECRET secure in your CMD
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+## 4. Running the app
 
 ```bash
 # development
@@ -45,17 +98,20 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
-
+# Endpoints
 ```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+# Prefix
+/api/v1/auth
 
-# test coverage
-$ npm run test:cov
+# Register | Protected
+@Post("register")
+
+# Login
+@Post("login")
+
+# logout | Protected
+@Post("logout")
 ```
 
 ## Support
